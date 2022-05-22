@@ -12,7 +12,6 @@
 
   # the actual repo creation & borgmatic config
   - role: m3nu.ansible_role_borgbackup
-    become: true
     borg_encryption_passphrase: "{{ vault.borg_passphrase }}"
     borg_repository: "{{ borgbase_repo_user }}@{{ borgbase_repo_host }}:repo"
     borg_source_directories:
