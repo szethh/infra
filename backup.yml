@@ -1,0 +1,23 @@
+---
+# synology uses a different borg procedure
+- hosts: docker,!oreonas
+  user: root
+
+  vars_files:
+    - 'vars/vault.yml'
+
+  roles:
+  # first, create the remote repo
+  - role: borgbase
+
+  # the actual repo creation & borgmatic config
+  - role: m3nu.ansible_role_borgbackup
+    become: true
+    borg_encryption_passphrase: "{{ vault.borg_passphrase }}"
+    borg_repository: "{{ borgbase_repo_user }}@{{ borgbase_repo_host }}:repo"
+    borg_source_directories:
+      - /home/szeth/docker
+    ssh_key_file: ssh_key 
+
+  # init and first backup
+  - role: borg

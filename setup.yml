@@ -21,14 +21,12 @@
         state: present
         key: https://github.com/MateoPeri.keys
     - name: update all packages
-      become: true
       package:
         name: '*'
         update_cache: true
         state: latest
 
-    - name: install/updates tailscale
-      become: true
+    - name: installs/updates tailscale
       package:
         name: tailscale
         state: latest
