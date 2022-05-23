@@ -1,0 +1,26 @@
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    server_name {{ item.value.proxy_subdomain }}.*;
+
+    include /config/nginx/ssl.conf;
+
+    client_max_body_size 0;
+
+    # enable for Authelia
+    include /config/nginx/authelia-server.conf;
+
+    location / {
+
+        # enable for Authelia
+        include /config/nginx/authelia-location.conf;
+
+        include /config/nginx/proxy.conf;
+        include /config/nginx/resolver.conf;
+        set $upstream_app {{ hostvars[item.value.proxy_host]['ansible_all_ipv4_addresses'] | select('search', '100.*') | list | first }};
+        set $upstream_port {{ item.value.proxy_port }};
+        set $upstream_proto {{ item.value.proxy_proto }};
+        proxy_pass $upstream_proto://$upstream_app:$upstream_port;
+    }
+}

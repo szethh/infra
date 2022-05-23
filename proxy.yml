@@ -1,0 +1,14 @@
+---
+
+- hosts: all
+  tasks:
+    - name: Gather IP addresses
+      setup:
+        gather_subset:
+          - '!all'
+          - '!min'
+          - all_ipv4_addresses
+
+- hosts: proxy
+  roles:
+    - role: add_proxy_host

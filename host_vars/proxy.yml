@@ -1,0 +1,31 @@
+proxy_domains:
+  'code':
+    proxy_subdomain: code
+    proxy_mode: subdomain
+    proxy_host: asus-docker
+    proxy_port: 8443
+    proxy_proto: https
+  'calibre':
+    proxy_subdomain: calibre
+    proxy_mode: subdomain
+    proxy_host: oreonas
+    proxy_port: 8083
+    proxy_proto: http
+  'paperless-ngx':
+    proxy_subdomain: paper
+    proxy_mode: subdomain
+    proxy_host: oreonas
+    proxy_port: 8000
+    proxy_proto: http
+  'proxmox':
+    proxy_subdomain: proxmox
+    proxy_mode: subdomain
+    proxy_host: asus
+    proxy_port: 8006
+    proxy_proto: http
+  'shiori':
+    proxy_subdomain: shiori
+    proxy_mode: subdomain
+    proxy_host: asus-docker
+    proxy_port: 8070
+    proxy_proto: http

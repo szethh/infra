@@ -1,0 +1,14 @@
+---
+
+# apparently synology doesn't list its tailscale ip when running ip...
+- name: Debug tailscale IP
+  debug:
+    msg: "[{{ item.key }}] available ips for {{ item.value.proxy_subdomain }} are {{ hostvars[item.value.proxy_host]['ansible_all_ipv4_addresses']}}"
+  loop: "{{ proxy_domains | dict2items }}"
+
+- name: Configure proxy
+  template:
+    src: "templates/swag_{{ item.value.proxy_mode }}_authelia.j2"
+    dest: "~/docker/swag/config/nginx/proxy-confs/{{ item.key }}.{{ item.value.proxy_mode }}.conf"
+    force: no
+  loop: "{{ proxy_domains | dict2items }}"
