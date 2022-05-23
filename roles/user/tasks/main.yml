@@ -1,0 +1,14 @@
+---
+- name: create user
+  user:
+    name: "{{ vault.user }}"
+    groups: sudo
+    append: true
+    password: "{{ vault[inventory_hostname].ansible_become_password | password_hash('sha512', vault.salt) }}"
+    shell: /bin/bash
+
+- name: import keys from github
+  authorized_key:
+    user: "{{ vault.user }}"
+    state: present
+    key: "https://github.com/{{ vault.github_username }}.keys"

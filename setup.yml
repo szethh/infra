@@ -7,6 +7,7 @@
 - hosts: oreonas
   # due to a bug in synology, we need to change permissions to gather_facts (see https://github.com/ansible/ansible/issues/75832#issuecomment-1017805387)
   gather_facts: false
+  ignore_unreachable: true
   
   vars_files:
     - 'vars/vault.yml'
@@ -20,33 +21,44 @@
         path: /usr/bin/capsh
         mode: 0755
 
-- hosts: all,!oreonas
+
+- hosts: all
+  ignore_unreachable: true
   user: root
 
   vars_files:
     - 'vars/vault.yml'
 
-  tasks:
-    - name: create user
-      user:
-        name: "{{ vault.user }}"
-        groups: sudo
-        password: "{{ vault[inventory_hostname].ansible_become_password | password_hash('sha512', vault.salt) }}"
-        shell: /bin/bash
-    
-    - name: import keys from github
-      authorized_key:
-        user: "{{ vault.user }}"
-        state: present
-        key: https://github.com/MateoPeri.keys
-    
-    - name: update all packages
-      package:
-        name: '*'
-        update_cache: true
-        state: latest
+  roles:
+    - role: user
 
-    - name: installs/updates tailscale
-      package:
-        name: tailscale
-        state: latest
+
+- hosts: all
+
+  vars_files:
+    - 'vars/vault.yml'
+
+  roles:
+    - role: set_sudo_password
+    - role: artis3n.tailscale
+      become: true
+      tailscale_up_skip: true
+
+
+- hosts: proxmox
+  user: root
+  roles:
+    - role: ironicbadger.proxmox_nag_removal
+
+
+- hosts: docker,!oreonas
+
+  vars_files:
+    - 'vars/vault.yml'
+  
+  roles:
+    - role: set_sudo_password
+    - role: geerlingguy.docker
+      become: true
+      docker_install_compose: true
+      docker_users: [ "{{ vault.user }}" ]

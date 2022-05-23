@@ -6,7 +6,7 @@
 - name: Scan SSH key fingerprint
   shell: "ssh-keyscan -t ecdsa {{ borgbase_repo_host }}"
   register: ssh_known_host_result
-  ignore_errors: yes
+  ignore_errors: true
   changed_when: false
 
 - name: Add repo to hosts

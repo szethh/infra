@@ -1,0 +1,3 @@
+- name: Set user sudo password
+  set_fact:
+    ansible_become_password: "{{ vault[inventory_hostname].ansible_become_password }}"
