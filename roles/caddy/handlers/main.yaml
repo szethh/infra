@@ -1,0 +1,4 @@
+---
+- name: restart caddy docker
+  shell: docker restart caddy
+  listen: "restart caddy"

@@ -1,0 +1,15 @@
+# {{ ansible_managed }}
+{
+  log {
+        output file /data/log/access.log
+    }
+
+  local_certs
+}
+
+{% for entry in rp_hosts %}
+{{ entry.subdomain }} {
+  reverse_proxy {{ entry.proto | default('http') }}://{{ entry.host }}:{{ entry.port }}
+}
+
+{% endfor %}

@@ -1,0 +1,58 @@
+---
+- name: Deploy proxmox infrastructure
+  hosts: pve
+  become: true
+  vars_files:
+    - "vars/vault.yml"
+  vars:
+    ansible_ssh_pass: "{{ vault.proxmox.pass }}"
+  pre_tasks:
+    - name: Remove enterprise repo
+      file:
+        state: absent
+        path: /etc/apt/sources.list.d/pve-enterprise.list
+    - name: Switch to community repo
+      apt_repository:
+        repo: "deb http://download.proxmox.com/debian/pve bullseye pve-no-subscription"
+        state: present
+    - name: Apt update
+      apt:
+        upgrade: "yes"
+        update_cache: yes
+        cache_valid_time: 3600
+  roles:
+    - role: install/nag_removal
+    - role: grog.package
+    - role: geerlingguy.pip
+    - role: install/pip_packages
+    - role: user
+    - role: user
+      new_user: "{{ vault.user }}"
+    - role: install/ssh
+    - role: artis3n.tailscale
+      tailscale_up_skip: yes
+    - role: install/mergerfs
+    # set up proxmox
+    - role: pve
+    # install docker
+    - role: geerlingguy.docker
+    # set up all containers (this should be replaced with the
+    # addition of the include keyword to docker compose)
+    # - role: ironicbadger.docker_compose_generator
+    - role: compose_gen
+    - role: pihole
+    - role: caddy
+### LXCs/VMs/VPS
+# - name: set up crab
+#   hosts: crab
+#   become: true
+#   vars_files:
+#     - "vars/vault.yaml"
+#   roles:
+#     - role: grog.package
+#     - role: geerlingguy.docker
+#     - role: user
+#       new_user: "{{ vault.user }}"
+#     - role: install/ssh
+#     - role: crab
+#     - role: compose_gen

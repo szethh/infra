@@ -1,0 +1,5 @@
+---
+docker_user: "{{ ansible_user }}"
+docker_group: "{{ docker_user }}"
+docker_dir: "/home/{{ docker_user }}/docker"
+force: true

@@ -1,0 +1,19 @@
+---
+roles:
+  - src: ironicbadger.docker_compose_generator
+  - src: ironicbadger.snapraid
+  - src: caddy_ansible.caddy_ansible
+  - src: grog.package
+  - src: geerlingguy.docker
+  - src: geerlingguy.ntp
+  - src: geerlingguy.nfs
+  - src: geerlingguy.pip
+  - src: geerlingguy.samba
+  - src: fuzzymistborn.autorestic
+
+collections:
+  - community.docker
+  - name: community.general
+    version: "7.1" # due to https://github.com/ansible-collections/community.general/issues/7025
+  - ansible.posix
+  - kewlfft.aur

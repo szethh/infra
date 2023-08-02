@@ -1,0 +1,25 @@
+---
+- name: ensure target dirs exists
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ docker_user }}"
+    group: "{{ docker_group | default(docker_user) }}"
+  loop:
+    - "{{ dnsmasq_config_dir }}"
+    - "{{ pihole_config_dir }}"
+
+- name: write setupVars file
+  template:
+    src: ../templates/pihole-setupVars.conf.j2
+    dest: "{{ pihole_config_dir }}/setupVars.conf"
+    owner: "{{ docker_user }}"
+    group: "{{ docker_group | default(docker_user) }}"
+
+- name: write dns file
+  template:
+    src: ../templates/dns-overrides.conf.j2
+    dest: "{{ dnsmasq_config_dir }}/03-dns-overrides.conf"
+    owner: "{{ docker_user }}"
+    group: "{{ docker_group | default(docker_user) }}"
+  notify: restart pihole dns

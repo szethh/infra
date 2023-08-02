@@ -1,0 +1,18 @@
+---
+hostname: crab
+infrastructure: true
+
+package_list:
+  - name: curl
+  - name: git
+  - name: htop
+  - name: sudo
+  - name: wget
+# pip_packages:
+#   - proxmoxer
+
+## COMPOSE-GEN
+# docker_user: "{{ vault.user }}"
+# docker_dir: "/home/{{ vault.user }}/docker"
+# compose_containers:
+#   gitea:

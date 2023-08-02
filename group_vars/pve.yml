@@ -1,0 +1,198 @@
+---
+hostname: pve
+infrastructure: true
+
+package_list:
+  - name: curl
+  - name: git
+  - name: htop
+  - name: sudo
+  - name: wget
+
+pip_packages:
+  - proxmoxer
+
+mergerfs_mount:
+  - path: /mnt/storage
+
+# load disks
+data_disks:
+  - path: /mnt/disk1
+    source: /dev/disk/by-id/ata-ST4000VN008-2DR166_ZGY68HA3-part1
+    fs: ext4
+    opts: defaults
+    content: true
+
+# fstab
+fstab_mergerfs:
+  - source: "/mnt/disk*"
+    mountpoint: "/mnt/storage"
+    fs: fuse.mergerfs
+    opts: "defaults,nonempty,allow_other,use_ino,cache.files=off,moveonenospc=true,dropcacheonclose=true,minfreespace=100G,fsname=mergerfs"
+
+lxc_main:
+  - name: crab
+    vmid: 200
+    unprivileged: true
+    gw: 192.168.50.1
+    ip: 192.168.50.55
+    disk: "speed:120"
+    cores: 2
+    memory: 4096
+    nesting: 1
+
+lxc_mounts:
+  - name: jelly
+    vmid: 250
+    unprivileged: true
+    gw: 192.168.50.1
+    ip: 192.168.50.20
+    bridge: vmbr0
+    disk: "speed:60"
+    cores: 8
+    memory: 5120
+    nesting: 1
+    keyctl: 0
+    # fsmount: cifs
+
+## COMPOSE-GEN
+docker_user: "{{ vault.user }}"
+docker_dir: "/home/{{ vault.user }}/docker"
+compose_containers:
+  ### PIHOLE
+  pihole:
+    version: "3"
+    services:
+      pihole:
+        container_name: pihole
+        image: pihole/pihole:latest
+        ports:
+          - "53:53/tcp"
+          - "53:53/udp"
+          - "67:67/udp"
+          - "8020:80/tcp"
+        environment:
+          TZ: "Europe/Amsterdam"
+        volumes:
+          - "./etc-pihole:/etc/pihole"
+          - "./etc-dnsmasq.d:/etc/dnsmasq.d"
+        restart: unless-stopped
+  ### CADDY
+  caddy:
+    version: "3.9"
+    services:
+      caddy:
+        image: caddy:latest
+        container_name: caddy
+        restart: unless-stopped
+        ports:
+          - "80:80"
+          - "443:443"
+          - "443:443/udp"
+        volumes:
+          - ./Caddyfile:/etc/caddy/Caddyfile
+          - ./data:/data
+          - ./config:/config
+
+### PIHOLE
+# network_cidr: 192.42.0.0/20
+pihole_password: "{{ vault.pihole.password }}"
+pihole_config_dir: "{{ docker_dir }}/pihole/etc-pihole"
+dnsmasq_config_dir: "{{ docker_dir }}/pihole/etc-dnsmasq.d"
+running_as_container: true
+dns_overrides:
+  - { ip: 100.111.51.141, custom_dns: "bnn.net" }
+
+### CADDY
+caddy_config_dir: "{{ docker_dir }}/caddy"
+rp_hosts:
+  - subdomain: spoti.bnn.net
+    host: blokk
+    port: 8338
+  - subdomain: yt.bnn.net
+    host: blokk
+    port: 8003
+  - subdomain: sabnzbd.bnn.net
+    host: blokk
+    port: 6755
+  - subdomain: bookdl.bnn.net
+    host: blokk
+    port: 8033
+  - subdomain: pic.bnn.net
+    host: blokk
+    port: 2283
+  - subdomain: proxmox.bnn.net
+    host: pve
+    port: 8006
+  - subdomain: paper.bnn.net
+    host: proxy
+    port: 8008
+  - subdomain: change.bnn.net
+    host: proxy
+    port: 5003
+  - subdomain: pdf.bnn.net
+    host: blokk
+    port: 8800
+  - subdomain: bazarr.bnn.net
+    host: blokk
+    port: 6767
+  - subdomain: prowlarr.bnn.net
+    host: blokk
+    port: 9696
+  - subdomain: radarr.bnn.net
+    host: blokk
+    port: 7878
+  - subdomain: dsm.bnn.net
+    host: oreonas
+    port: 5001
+  - subdomain: shiori.bnn.net
+    host: proxy
+    port: 8070
+  - subdomain: sonarrtv.bnn.net
+    host: blokk
+    port: 8988
+  - subdomain: link.bnn.net
+    host: proxy
+    port: 9090
+  - subdomain: readarr.bnn.net
+    host: blokk
+    port: 8787
+  - subdomain: ntfy.bnn.net
+    host: proxy
+    port: 8044
+  - subdomain: lidarr.bnn.net
+    host: blokk
+    port: 8686
+  - subdomain: memos.bnn.net
+    host: proxy
+    port: 5230
+  - subdomain: calibre.bnn.net
+    host: blokk
+    port: 8083
+  - subdomain: translate.bnn.net
+    host: blokk
+    port: 5050
+  - subdomain: home.bnn.net
+    host: homeassistant
+    port: 8123
+  - subdomain: hci.bnn.net
+    host: proxy
+    port: 8020
+  - subdomain: qbit.bnn.net
+    host: blokk
+    port: 8090
+  - subdomain: jelly.bnn.net
+    host: blokk
+    port: 8096
+  - subdomain: uptime.bnn.net
+    host: proxy
+    port: 3001
+  - subdomain: sonarr.bnn.net
+    host: blokk
+    port: 8989
+  - subdomain: docs.bnn.net
+    host: proxy
+    port: 8000
+  - subdomain: plex.bnn.net
+    host: blokk
+    port: 32400

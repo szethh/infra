@@ -1,0 +1,15 @@
+---
+- name: create user
+  user:
+    name: "{{ new_user }}"
+    groups: sudo, docker
+    append: true
+    password: "{{ (vault[inventory_hostname].ansible_become_password | default(vault.ansible_become_default_password)) | password_hash('sha512', vault.salt) }}"
+  when: new_user != 'root'
+
+- name: import keys from github
+  authorized_key:
+    user: "{{ new_user }}"
+    state: present
+    key: "{{ item }}"
+  loop: "{{ [vault.pubkey, 'https://github.com/' + vault.github_username + '.keys'] }}"

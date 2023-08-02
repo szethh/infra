@@ -1,0 +1,10 @@
+{
+  "yaml.schemas": {
+    "https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/tasks": "file:///Users/szeth/dev/nix/roles/pve/tasks/main.yml"
+  },
+  "ansible.python.interpreterPath": "/usr/local/bin/python3.11",
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "python.formatting.provider": "none"
+}

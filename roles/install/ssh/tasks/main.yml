@@ -1,0 +1,8 @@
+- name: SSH Keys
+  authorized_key:
+    user: "{{ item.user }}"
+    state: present
+    key: "{{ item.ssh }}"
+  loop:
+    - { user: "{{ vault.user }}", ssh: "{{ vault.pubkey }}" }
+    # - {user: ansible, ssh: "{{ secret_ansible_ssh }}"}

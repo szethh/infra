@@ -1,0 +1,9 @@
+---
+# check blogpost https://blog.ktz.me/fully-automated-dns-and-dhcp-with-pihole-and-dnsmasq/
+# and source at https://github.com/ironicbadger/infra/blob/master/roles/ktz-dhcp-dns
+
+# - name: Check for duplicated items
+#   include_tasks: duplicate_checks.yaml
+
+- name: Template config files into place
+  include_tasks: template.yaml

@@ -1,0 +1,8 @@
+---
+- name: write Caddyfile
+  template:
+    src: ../templates/Caddyfile.j2
+    dest: "{{ caddy_config_dir }}/Caddyfile"
+    owner: "{{ docker_user }}"
+    group: "{{ docker_group | default(docker_user) }}"
+  notify: restart caddy

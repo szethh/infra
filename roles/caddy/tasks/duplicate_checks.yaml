@@ -1,0 +1,31 @@
+---
+- name: basic preflight duplicate checks
+  block:
+    # source: https://www.reddit.com/r/ansible/comments/b5tzp1/ansible_get_list_of_subelements_and_assert_for/
+    - name: create data structure to check via assertion
+      set_fact:
+        dupe_check: |
+          {
+            'total_count': {{ rp_hosts | length }},
+            'unique_subdomains': {{ (rp_hosts | selectattr('subdomain', 'defined') | map(attribute='subdomain') | list) | unique | length }},
+          }
+
+    - name: prints counts for basic duplicate checks
+      debug:
+        var: dupe_check
+
+    - name: assert no duplicates
+      assert:
+        that:
+          - dupe_check.total_count == dupe_check.unique_subdomains
+
+  rescue:
+    - name: dupe check
+      debug:
+        msg: "Duplicate entry: {{ item | duplicates }}"
+      loop:
+        - "{{ rp_hosts | selectattr('subdomain', 'defined') | map(attribute='subdomain') }}"
+
+    - name: Fail when errors
+      ansible.builtin.fail:
+        msg: "Duplicate subdomain found!"

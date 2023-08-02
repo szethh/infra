@@ -1,0 +1,67 @@
+---
+### Create LXCs
+
+- name: Update pveam
+  command: pveam update
+
+- name: Download container templates
+  command: pveam download tank-store {{ item }}
+  loop:
+    - ubuntu-22.04-standard_22.04-1_amd64.tar.zst
+    - debian-11-standard_11.7-1_amd64.tar.zst
+
+- name: Create LXCs on main VLAN
+  proxmox:
+    vmid: "{{ item.vmid }}"
+    hostname: "{{ item.name }}"
+    unprivileged: "{{ item.unprivileged }}"
+    onboot: "{{ item.onboot | default('true') }}"
+    state: present
+    node: pve
+    storage: speed
+    disk: "{{ item.disk }}"
+    cpus: "1"
+    cpuunits: "1000"
+    cores: "{{ item.cores }}"
+    memory: "{{ item.memory }}"
+    swap: "{{ item.swap | default('512') }}"
+    api_user: root@pam
+    api_host: localhost
+    api_password: "{{ vault.proxmox.pass }}"
+    pubkey: "{{ vault.pubkey }}"
+    password: "{{ vault.proxmox.pass }}"
+    netif: "{'net0':'name=eth0,gw={{ item.gw }},ip={{ item.ip }}/24,bridge=vmbr0'}"
+    ostemplate: "{{ item.template | default('tank-store:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst') }}"
+    features:
+      - nesting={{ item.nesting | default('1') }}
+      # - keyctl={{ item.keyctl | default('0') }}
+  loop: "{{ lxc_main }}"
+
+- name: Create LXC CT w/ Mounts
+  proxmox:
+    vmid: "{{ item.vmid }}"
+    hostname: "{{ item.name }}"
+    unprivileged: "{{ item.unprivileged }}"
+    onboot: "{{ item.onboot | default('true') }}"
+    state: present
+    node: pve
+    storage: speed
+    disk: "{{ item.disk }}"
+    cpus: "1"
+    cpuunits: "1000"
+    cores: "{{ item.cores }}"
+    memory: "{{ item.memory }}"
+    swap: "{{ item.swap | default('512') }}"
+    api_user: root@pam
+    api_host: localhost
+    api_password: "{{ vault.proxmox.pass }}"
+    pubkey: "{{ vault.pubkey }}"
+    password: "{{ vault.proxmox.pass }}"
+    netif: "{'net0':'name=eth0,gw={{ item.gw }},ip={{ item.ip }}/24,tag={{ item.tag | default('') }},bridge={{ item.bridge }}'}"
+    ostemplate: "{{ item.template | default('tank-store:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst') }}"
+    mounts: "{'mp0':'/mnt/storage,mp=/mnt/storage,backup=0'}"
+    features:
+      - nesting={{ item.nesting | default('0') }}
+      - keyctl={{ item.keyctl | default('0') }}
+      # - mount={{ item.fsmount }}
+  loop: "{{ lxc_mounts }}"

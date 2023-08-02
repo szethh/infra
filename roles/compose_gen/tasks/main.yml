@@ -1,0 +1,23 @@
+---
+- name: ensure docker directories exist
+  file:
+    path: "{{ docker_dir }}/{{ item.key }}"
+    state: directory
+    owner: "{{ docker_user }}"
+    group: "{{ docker_group }}"
+  loop: "{{ compose_containers | dict2items }}"
+  when: compose_containers is defined
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: create docker compose files
+  copy:
+    content: |
+      {{ item.value | to_nice_yaml(sort_keys=False, indent=2) }}
+    dest: "{{ docker_dir }}/{{ item.key }}/docker-compose.yml"
+    owner: "{{ docker_user }}"
+    group: "{{ docker_group }}"
+  loop: "{{ compose_containers | dict2items }}"
+  when: compose_containers is defined
+  loop_control:
+    label: "{{ item.key }}"
