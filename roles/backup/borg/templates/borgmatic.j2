@@ -1,0 +1,35 @@
+location:
+  # List of source directories to backup.
+  source_directories:
+    {% for path in borg_backup_dirs %}
+    - {{ path }}
+    {% endfor %}
+
+  # Paths of local or remote repositories to backup to.
+  repositories:
+  {% for repo in borg_repos %}
+    - {{ repo }}
+  {% endfor %}
+
+storage:
+  encryption_passphrase: "{{ borg_encryption_passphrase }}"
+
+retention:
+  # Retention policy for how many backups to keep.
+  keep_daily: 7
+  keep_weekly: 4
+  keep_monthly: 6
+
+consistency:
+  # List of checks to run to validate your backups.
+  checks:
+    - name: repository
+    - name: archives
+      frequency: 2 weeks
+
+{# hooks:
+  # Custom preparation scripts to run.
+  after_backup:
+      {% for repo in borg_repos %}
+      - rclone sync {{ repo.path }} {{ repo.name }}
+      {% endfor %} #}

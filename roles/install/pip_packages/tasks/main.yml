@@ -3,4 +3,4 @@
   pip:
     name: "{{ item }}"
     extra_args: --break-system-packages
-  loop: "{{ pip_packages }}"
+  loop: "{{ pip_packages | default([]) }}"

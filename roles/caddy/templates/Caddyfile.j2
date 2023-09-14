@@ -7,9 +7,13 @@
   local_certs
 }
 
-{% for entry in rp_hosts %}
+{% for entry in caddy_rp_hosts %}
 {{ entry.subdomain }} {
-  reverse_proxy {{ entry.proto | default('http') }}://{{ entry.host }}:{{ entry.port }}
+  reverse_proxy {{ entry.proto | default('http') }}://{{ entry.host }}:{{ entry.port }} {{ entry.extra | default('') }}
 }
 
+{% if custom_config is defined %}
+// Custom Configuration:
+{{ caddy_custom_config }}
+{% endif %}
 {% endfor %}

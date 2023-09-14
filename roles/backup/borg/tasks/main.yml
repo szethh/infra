@@ -1,0 +1,43 @@
+# adds borg repo to known_hosts,
+# initializes the repo and creates a backup
+
+---
+- name: create borgmatic config dir
+  file:
+    path: "{{ borgmatic_config_path | dirname }}"
+    state: directory
+    mode: 0755
+    recurse: yes
+
+- name: Create borgmatic configuration file
+  template:
+    src: borgmatic.j2
+    dest: "{{ borgmatic_config_path }}"
+
+- name: Scan SSH key fingerprint
+  shell: "ssh-keyscan -t ecdsa {{ borgbase_repo_host }}"
+  register: ssh_known_host_result
+  ignore_errors: true
+  changed_when: false
+
+- name: Add repo to hosts
+  known_hosts:
+    name: "{{ borgbase_repo_host }}"
+    key: "{{ ssh_known_host_result.stdout }}"
+    state: present
+    hash_host: true
+
+- name: Initialize Borg repository
+  command: borgmatic -c "{{ borgmatic_config_path }}" init --encryption repokey-blake2
+  register: result
+  # see https://github.com/borgbackup/borg/issues/271#issuecomment-953328932
+  # when: result.rc == 2
+  changed_when: result.rc == 0
+  failed_when: result.rc == 2 and 'A repository already exists at' not in result.stderr or result.rc != 2 and result.rc != 0
+
+- name: Schedule backups using cron
+  cron:
+    name: borgmatic backups
+    minute: 0
+    hour: 3
+    job: "borgmatic -c {{ borgmatic_config_path }}"

@@ -1,0 +1,79 @@
+---
+hostname: proxy
+
+## COMPOSE-GEN
+docker_user: "{{ vault.user }}"
+docker_dir: "/home/{{ vault.user }}/docker"
+compose_containers:
+  ### CADDY
+  caddy:
+    version: "3.9"
+    services:
+      caddy:
+        image: caddy:latest
+        container_name: caddy
+        restart: unless-stopped
+        ports:
+          - "80:80"
+          - "443:443"
+          - "443:443/udp"
+        volumes:
+          - ./Caddyfile:/etc/caddy/Caddyfile
+          - ./data:/data
+          - ./config:/config
+  ### NTFY
+  ntfy:
+    version: "2.1"
+    services:
+      ntfy:
+        image: binwiederhier/ntfy
+        container_name: ntfy
+        command:
+          - serve
+        environment:
+          - TZ=Europe/Amsterdam
+        volumes:
+          - ./cache:/var/cache/ntfy
+          - ./data:/etc/ntfy
+        ports:
+          - 8044:80
+        restart: unless-stopped
+  ### MKDOCS
+  mkdocs:
+    version: "3.3"
+    services:
+      mkdocs:
+        container_name: mkdocs
+        ports:
+          - 8000:8000
+        volumes:
+          - .:/docs
+        image: squidfunk/mkdocs-material
+        restart: unless-stopped
+  ### UPTIME KUMA
+  uptime_kuma:
+    version: "3.3"
+    services:
+      uptime-kuma:
+        image: louislam/uptime-kuma:1
+        container_name: uptime-kuma
+        volumes:
+          - ./data:/app/data
+        ports:
+          - 3001:3001
+        restart: unless-stopped
+
+### CADDY
+caddy_config_dir: "{{ docker_dir }}/caddy"
+# TODO: add config to
+caddy_custom_config: ""
+caddy_rp_hosts:
+  - subdomain: ntfy.bnuuy.net
+    host: proxy
+    port: 8044
+  - subdomain: uptime.bnuuy.net
+    host: proxy
+    port: 3001
+  - subdomain: hci.bnuuy.net
+    host: blokk
+    port: 8020

@@ -64,4 +64,4 @@
       - nesting={{ item.nesting | default('0') }}
       - keyctl={{ item.keyctl | default('0') }}
       # - mount={{ item.fsmount }}
-  loop: "{{ lxc_mounts }}"
+  loop: "{{ lxc_mounts | default([]) }}"

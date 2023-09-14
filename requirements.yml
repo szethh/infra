@@ -16,4 +16,4 @@ collections:
   - name: community.general
     version: "7.1" # due to https://github.com/ansible-collections/community.general/issues/7025
   - ansible.posix
-  - kewlfft.aur
+  - adhawkins.borgbase

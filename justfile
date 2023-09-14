@@ -9,7 +9,10 @@ build_proxmox:
     ansible-playbook -u root -b run.yml --limit pve -c paramiko
 
 build +HOST:
-    ansible-playbook -b run.yml --limit {{ HOST }}
+    ansible-playbook -b run.yml --limit {{ HOST }} -c paramiko
+
+build_all:
+    ansible-playbook -b run.yml -c paramiko
 
 ### Updates
 # update:

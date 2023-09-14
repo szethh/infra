@@ -18,16 +18,16 @@
 - name: get latest release
   uri:
     url: https://api.github.com/repos/trapexit/mergerfs/releases/latest
-    url_username: "{{ github_api_user | default (omit) }}"
-    url_password: "{{ github_api_pass | default (omit) }}"
+    url_username: "{{ github_api_user | default(omit) }}"
+    url_password: "{{ github_api_pass | default(omit) }}"
     return_content: true
-    force_basic_auth: "{{ github_api_auth | default (omit) }}"
+    force_basic_auth: "{{ github_api_auth | default(omit) }}"
   register: release_version_registered
   when: mergerfs_download_latest_ver == True
 
 - name: set mergerfs version (latest)
   set_fact:
-    mergerfs_ver: "{{ release_version_registered.json.tag_name|regex_replace('v') }}"
+    mergerfs_ver: "{{ release_version_registered.json.tag_name | regex_replace('v') }}"
   when: mergerfs_download_latest_ver == True
 
 - name: set mergerfs version (pinned)
@@ -56,4 +56,7 @@
       apt:
         deb: "{{ mergerfs_download_directory }}/mergerfs_{{ mergerfs_ver }}.{{ mergerfs_distro }}.deb"
         state: present
-  when: mergerfs_is_installed == False or ( mergerfs_is_installed == True and mergerfs_download_latest_ver == True and installed_version_registered.stdout != mergerfs_ver ) or ( mergerfs_is_installed == True and mergerfs_download_latest_ver == False and installed_version_registered.stdout != mergerfs_pinned_ver )
+  when: >
+    mergerfs_is_installed == False
+    or (mergerfs_is_installed == True and mergerfs_download_latest_ver == True and installed_version_registered.stdout != mergerfs_ver)
+    or (mergerfs_is_installed == True and mergerfs_download_latest_ver == False and installed_version_registered.stdout != mergerfs_pinned_ver)

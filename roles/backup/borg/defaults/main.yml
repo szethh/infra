@@ -1,0 +1,9 @@
+borg_backup_dirs: []
+encryption_passphrase: mysecretpassphrase
+borgmatic_config_path: /etc/borgmatic/config.yaml
+
+borgbase_repo_user: youruser
+borgbase_repo_host: "{{ borgbase_repo_user }}.repo.borgbase.com"
+
+borg_repos:
+  - "ssh://{{ borgbase_repo_user }}@{{ borgbase_repo_host }}/./repo"

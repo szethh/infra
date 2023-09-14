@@ -41,19 +41,40 @@ lxc_main:
     memory: 4096
     nesting: 1
 
-lxc_mounts:
-  - name: jelly
-    vmid: 250
-    unprivileged: true
-    gw: 192.168.50.1
-    ip: 192.168.50.20
-    bridge: vmbr0
-    disk: "speed:60"
-    cores: 8
-    memory: 5120
-    nesting: 1
-    keyctl: 0
-    # fsmount: cifs
+  # - name: hass
+  #   vmid: 202
+  #   unprivileged: true
+  #   gw: 192.168.50.1
+  #   ip: 192.168.50.88
+  #   disk: "speed:64"
+  #   cores: 1
+  #   memory: 2048
+  #   nesting: 1
+
+# lxc_mounts:
+# - name: jelly
+#   vmid: 250
+#   unprivileged: true
+#   gw: 192.168.50.1
+#   ip: 192.168.50.20
+#   bridge: vmbr0
+#   disk: "speed:60"
+#   cores: 8
+#   memory: 5120
+#   nesting: 1
+#   keyctl: 0
+# fsmount: cifs
+# - name: win
+#   vmid: 223
+#   unprivileged: true
+#   gw: 192.168.50.1
+#   ip: 192.168.50.90
+#   bridge: vmbr0
+#   disk: "speed:60"
+#   cores: 8
+#   memory: 5120
+#   nesting: 1
+#   keyctl: 0
 
 ## COMPOSE-GEN
 docker_user: "{{ vault.user }}"
@@ -93,6 +114,55 @@ compose_containers:
           - ./Caddyfile:/etc/caddy/Caddyfile
           - ./data:/data
           - ./config:/config
+  jellyfin:
+    version: "2.1"
+    services:
+      jellyfin:
+        image: lscr.io/linuxserver/jellyfin:latest
+        container_name: jellyfin
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - TZ=Europe/Amsterdam
+        volumes:
+          - ./config:/config
+          - /mnt/storage/media:/data
+        #    devices:
+        #      - /dev/dri:/dev/dri
+        ports:
+          - 8096:8096
+        restart: unless-stopped
+  plex:
+    version: "2.1"
+    services:
+      plex:
+        image: ghcr.io/linuxserver/plex
+        container_name: plex
+        #network_mode: host
+        environment:
+          - PUID=1000
+          - PGID=1000
+          - VERSION=docker
+        volumes:
+          - ./config:/config
+          - /mnt/storage/media:/media
+        ports:
+          - 32400:32400
+        restart: unless-stopped
+  samba-server:
+    version: "3.3"
+    services:
+      samba:
+        image: crazymax/samba
+        container_name: samba
+        network_mode: host
+        volumes:
+          - "./data:/data"
+          - "/mnt/storage/downloads/complete/games:/samba/games:ro"
+        environment:
+          - "TZ=Europe/Amsterdam"
+          - "SAMBA_LOG_LEVEL=0"
+        restart: unless-stopped
 
 ### PIHOLE
 # network_cidr: 192.42.0.0/20
@@ -101,11 +171,11 @@ pihole_config_dir: "{{ docker_dir }}/pihole/etc-pihole"
 dnsmasq_config_dir: "{{ docker_dir }}/pihole/etc-dnsmasq.d"
 running_as_container: true
 dns_overrides:
-  - { ip: 100.111.51.141, custom_dns: "bnn.net" }
+  - { ip: 100.78.187.125, custom_dns: "bnn.net" }
 
 ### CADDY
 caddy_config_dir: "{{ docker_dir }}/caddy"
-rp_hosts:
+caddy_rp_hosts:
   - subdomain: spoti.bnn.net
     host: blokk
     port: 8338
@@ -124,11 +194,18 @@ rp_hosts:
   - subdomain: proxmox.bnn.net
     host: pve
     port: 8006
+    proto: https
+    extra: |
+      {
+        transport http {
+          tls_insecure_skip_verify
+        }
+      }
   - subdomain: paper.bnn.net
     host: proxy
     port: 8008
   - subdomain: change.bnn.net
-    host: proxy
+    host: blokk
     port: 5003
   - subdomain: pdf.bnn.net
     host: blokk
@@ -146,14 +223,11 @@ rp_hosts:
     host: oreonas
     port: 5001
   - subdomain: shiori.bnn.net
-    host: proxy
+    host: blokk
     port: 8070
   - subdomain: sonarrtv.bnn.net
     host: blokk
     port: 8988
-  - subdomain: link.bnn.net
-    host: proxy
-    port: 9090
   - subdomain: readarr.bnn.net
     host: blokk
     port: 8787
@@ -163,9 +237,6 @@ rp_hosts:
   - subdomain: lidarr.bnn.net
     host: blokk
     port: 8686
-  - subdomain: memos.bnn.net
-    host: proxy
-    port: 5230
   - subdomain: calibre.bnn.net
     host: blokk
     port: 8083
@@ -176,13 +247,13 @@ rp_hosts:
     host: homeassistant
     port: 8123
   - subdomain: hci.bnn.net
-    host: proxy
+    host: blokk
     port: 8020
   - subdomain: qbit.bnn.net
     host: blokk
     port: 8090
   - subdomain: jelly.bnn.net
-    host: blokk
+    host: pve
     port: 8096
   - subdomain: uptime.bnn.net
     host: proxy
@@ -194,5 +265,5 @@ rp_hosts:
     host: proxy
     port: 8000
   - subdomain: plex.bnn.net
-    host: blokk
+    host: pve
     port: 32400

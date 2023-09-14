@@ -1,4 +1,37 @@
 ---
+- name: install pkgs
+  hosts: all,!blokk
+  become: true
+  gather_facts: false
+  vars:
+    ansible_ssh_pass: "{{ vault.ansible_become_default_password }}"
+  vars_files:
+    - "vars/vault.yml"
+  roles:
+    - role: grog.package
+    - role: geerlingguy.pip
+    - role: install/pip_packages
+    - role: user
+      new_user: "{{ vault.user }}"
+    - role: install/ssh
+    - role: artis3n.tailscale
+      tailscale_up_skip: yes
+    - role: geerlingguy.docker
+
+# TODO: make a role to install nix packages
+
+- name: set up compose
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    ansible_ssh_pass: "{{ vault.ansible_become_default_password }}"
+  vars_files:
+    - "vars/vault.yml"
+  roles:
+    - role: compose_gen
+    - role: caddy
+
 - name: Deploy proxmox infrastructure
   hosts: pve
   become: true
@@ -47,7 +80,7 @@
 #   hosts: crab
 #   become: true
 #   vars_files:
-#     - "vars/vault.yaml"
+#     - "vars/vault.yml"
 #   roles:
 #     - role: grog.package
 #     - role: geerlingguy.docker
@@ -56,3 +89,19 @@
 #     - role: install/ssh
 #     - role: crab
 #     - role: compose_gen
+
+# - name: set up backup
+#   hosts: all
+#   become: true
+#   vars_files:
+#     - "vars/vault.yml"
+#   roles:
+#     - role: grog.package
+#       package_list:
+#         - name: borgbackup
+#         - name: borgmatic
+#     - role: backup/borgbase
+#     - role: backup/borg
+#       borg_encryption_passphrase: "{{ vault.borg_passphrase }}"
+#       borg_backup_dirs:
+#         - "/home/{{ vault.user }}"

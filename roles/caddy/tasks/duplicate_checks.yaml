@@ -6,8 +6,8 @@
       set_fact:
         dupe_check: |
           {
-            'total_count': {{ rp_hosts | length }},
-            'unique_subdomains': {{ (rp_hosts | selectattr('subdomain', 'defined') | map(attribute='subdomain') | list) | unique | length }},
+            'total_count': {{ caddy_rp_hosts | length }},
+            'unique_subdomains': {{ (caddy_rp_hosts | selectattr('subdomain', 'defined') | map(attribute='subdomain') | list) | unique | length }},
           }
 
     - name: prints counts for basic duplicate checks
@@ -24,7 +24,7 @@
       debug:
         msg: "Duplicate entry: {{ item | duplicates }}"
       loop:
-        - "{{ rp_hosts | selectattr('subdomain', 'defined') | map(attribute='subdomain') }}"
+        - "{{ caddy_rp_hosts | selectattr('subdomain', 'defined') | map(attribute='subdomain') }}"
 
     - name: Fail when errors
       ansible.builtin.fail:

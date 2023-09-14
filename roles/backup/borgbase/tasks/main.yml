@@ -1,0 +1,38 @@
+# creates an ssh key, uploads it to borgbase, and creates a repo
+# see https://adhawkins.github.io/ansible-borgbase/collections/adhawkins/borgbase/borgbase_repo_module.html#examples
+---
+- name: Generate ssh keys
+  community.crypto.openssh_keypair:
+    path: "{{ ansible_env.HOME }}/.ssh/id_ed25519"
+    type: ed25519
+
+- name: Read key from file
+  slurp:
+    src: "{{ ansible_env.HOME }}/.ssh/id_ed25519.pub"
+  register: ssh_key
+  check_mode: yes
+
+- name: Add key to borgbase
+  adhawkins.borgbase.borgbase_ssh:
+    state: present
+    name: "{{ ansible_user_id }}@{{ ansible_hostname }}"
+    key: "{{ ssh_key['content'] | b64decode }}"
+    apikey: "{{ vault.borgbase_apikey }}"
+  register: borgbase_key
+
+- name: Create borgbase repo
+  adhawkins.borgbase.borgbase_repo:
+    state: present
+    name: "{{ ansible_hostname }}"
+    apikey: "{{ vault.borgbase_apikey }}"
+    full_access_keys: ["{{ borgbase_key.key_id }}"]
+    alert_days: 2
+  register: borgbase_repo
+
+- name: Set borgbase_repo_user
+  set_fact:
+    borgbase_repo_user: "{{ borgbase_repo.repo_id }}"
+
+- name: Set borgbase_repo_host
+  set_fact:
+    borgbase_repo_host: "{{ borgbase_repo_user }}.repo.borgbase.com"
