@@ -1,0 +1,28 @@
+---
+- name: Deploy proxmox infrastructure
+  hosts: pve
+  become: true
+  vars_files:
+    - "vars/vault.yml"
+  vars:
+    ansible_ssh_pass: "{{ vault.proxmox.pass }}"
+  pre_tasks:
+    - name: Remove enterprise repo
+      file:
+        state: absent
+        path: /etc/apt/sources.list.d/pve-enterprise.list
+    - name: Switch to community repo
+      apt_repository:
+        repo: "deb http://download.proxmox.com/debian/pve bullseye pve-no-subscription"
+        state: present
+    - name: Apt update
+      apt:
+        upgrade: "yes"
+        update_cache: yes
+        cache_valid_time: 3600
+  roles:
+    # - role: install/nag_removal
+    # - role: install/mergerfs
+    # set up proxmox
+    - role: pve
+    - role: pihole

@@ -1,6 +1,7 @@
 ---
 hostname: pve
 infrastructure: true
+disks: false
 
 package_list:
   - name: curl
@@ -31,6 +32,20 @@ fstab_mergerfs:
     opts: "defaults,nonempty,allow_other,use_ino,cache.files=off,moveonenospc=true,dropcacheonclose=true,minfreespace=100G,fsname=mergerfs"
 
 lxc_main:
+  - name: kite
+    vmid: 232
+    unprivileged: true
+    gw: 192.168.50.1
+    ip: 192.168.50.232
+    disk: "tank-store:120"
+    ostemplate: "tank-store:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst"
+    cores: 2
+    memory: 4096
+    mounts:
+      mp0: "/mnt/storage,mp=/mnt/storage,backup=0"
+    nesting: 1
+    keyctl: 1
+
   - name: crab
     vmid: 200
     unprivileged: true
@@ -105,6 +120,7 @@ compose_containers:
       caddy:
         image: caddy:latest
         container_name: caddy
+        user: 1000:1000
         restart: unless-stopped
         ports:
           - "80:80"
@@ -177,26 +193,26 @@ dns_overrides:
 caddy_config_dir: "{{ docker_dir }}/caddy"
 caddy_rp_hosts:
   - subdomain: spoti.bnn.net
-    host: blokk
+    host: kite
     port: 8338
   - subdomain: yt.bnn.net
-    host: blokk
+    host: kite
     port: 8003
   - subdomain: sabnzbd.bnn.net
-    host: blokk
+    host: kite
     port: 6755
   - subdomain: bookdl.bnn.net
-    host: blokk
+    host: kite
     port: 8033
   - subdomain: pic.bnn.net
-    host: blokk
+    host: kite
     port: 2283
   - subdomain: proxmox.bnn.net
     host: pve
     port: 8006
     proto: https
     extra: |
-      {
+      reverse_proxy https://pve:8006 {
         transport http {
           tls_insecure_skip_verify
         }
@@ -205,65 +221,69 @@ caddy_rp_hosts:
     host: proxy
     port: 8008
   - subdomain: change.bnn.net
-    host: blokk
+    host: kite
     port: 5003
   - subdomain: pdf.bnn.net
-    host: blokk
+    host: kite
     port: 8800
   - subdomain: bazarr.bnn.net
-    host: blokk
+    host: kite
     port: 6767
   - subdomain: prowlarr.bnn.net
-    host: blokk
+    host: kite
     port: 9696
   - subdomain: radarr.bnn.net
-    host: blokk
+    host: kite
     port: 7878
   - subdomain: dsm.bnn.net
     host: oreonas
     port: 5001
   - subdomain: shiori.bnn.net
-    host: blokk
+    host: kite
     port: 8070
   - subdomain: sonarrtv.bnn.net
-    host: blokk
+    host: kite
     port: 8988
   - subdomain: readarr.bnn.net
-    host: blokk
+    host: kite
     port: 8787
   - subdomain: ntfy.bnn.net
     host: proxy
     port: 8044
   - subdomain: lidarr.bnn.net
-    host: blokk
+    host: kite
     port: 8686
   - subdomain: calibre.bnn.net
-    host: blokk
+    host: kite
     port: 8083
   - subdomain: translate.bnn.net
-    host: blokk
+    host: kite
     port: 5050
   - subdomain: home.bnn.net
     host: homeassistant
     port: 8123
   - subdomain: hci.bnn.net
-    host: blokk
+    host: kite
     port: 8020
   - subdomain: qbit.bnn.net
-    host: blokk
+    host: kite
     port: 8090
   - subdomain: jelly.bnn.net
     host: pve
     port: 8096
   - subdomain: uptime.bnn.net
-    host: proxy
+    host: kite
     port: 3001
   - subdomain: sonarr.bnn.net
-    host: blokk
+    host: kite
     port: 8989
   - subdomain: docs.bnn.net
-    host: proxy
+    host: kite
     port: 8000
   - subdomain: plex.bnn.net
     host: pve
     port: 32400
+  - subdomain: pihole.bnn.net
+    host: pve
+    port: 8020
+    # path: /admin

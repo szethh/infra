@@ -6,13 +6,17 @@ export PATH := justfile_directory() + "/env/bin:" + env_var("PATH")
 
 ### Run/Builds
 build_proxmox:
-    ansible-playbook -u root -b run.yml --limit pve -c paramiko
+    ansible-playbook -b proxmox.yml --limit pve -c paramiko
 
 build +HOST:
     ansible-playbook -b run.yml --limit {{ HOST }} -c paramiko
 
 build_all:
     ansible-playbook -b run.yml -c paramiko
+
+
+configure +HOST:
+    ansible-playbook -b services.yml --limit {{ HOST }} -c paramiko
 
 ### Updates
 # update:

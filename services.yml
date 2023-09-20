@@ -1,0 +1,12 @@
+---
+- name: set up compose
+  hosts: all
+  become: true
+  # gather_facts: false
+  vars:
+    ansible_ssh_pass: "{{ vault.ansible_become_default_password }}"
+  vars_files:
+    - "vars/vault.yml"
+  roles:
+    - role: compose_gen
+    - role: caddy

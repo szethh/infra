@@ -5,6 +5,7 @@
     groups: sudo, docker
     append: true
     password: "{{ (vault[inventory_hostname].ansible_become_password | default(vault.ansible_become_default_password)) | password_hash('sha512', vault.salt) }}"
+    shell: "/bin/bash"
   when: new_user != 'root'
 
 - name: import keys from github

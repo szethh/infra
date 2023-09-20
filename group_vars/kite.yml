@@ -1,5 +1,12 @@
 ---
-hostname: blokk
+hostname: kite
+
+package_list:
+  - name: curl
+  - name: git
+  - name: htop
+  - name: sudo
+  - name: wget
 
 ## COMPOSE-GEN
 docker_user: "{{ vault.user }}"
@@ -42,4 +49,28 @@ compose_containers:
           - ./data:/datastore
         ports:
           - 5003:5000
+        restart: unless-stopped
+  ### UPTIME KUMA
+  uptime_kuma:
+    version: "3.3"
+    services:
+      uptime-kuma:
+        image: louislam/uptime-kuma:1
+        container_name: uptime-kuma
+        volumes:
+          - ./data:/app/data
+        ports:
+          - 3001:3001
+        restart: unless-stopped
+  ### MKDOCS
+  mkdocs:
+    version: "3.3"
+    services:
+      mkdocs:
+        container_name: mkdocs
+        ports:
+          - 8000:8000
+        volumes:
+          - .:/docs
+        image: squidfunk/mkdocs-material
         restart: unless-stopped

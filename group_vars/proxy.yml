@@ -5,8 +5,8 @@ hostname: proxy
 docker_user: "{{ vault.user }}"
 docker_dir: "/home/{{ vault.user }}/docker"
 compose_containers:
-  ### CADDY
-  caddy:
+  ### CADDY & CLOUDFLARED
+  proxy:
     version: "3.9"
     services:
       caddy:
@@ -21,6 +21,11 @@ compose_containers:
           - ./Caddyfile:/etc/caddy/Caddyfile
           - ./data:/data
           - ./config:/config
+      cloudflared:
+        command: "tunnel --no-autoupdate run --token ${CLOUDFLARED_TOKEN}"
+        image: "cloudflare/cloudflared:latest"
+        container_name: cloudflared
+        restart: unless-stopped
   ### NTFY
   ntfy:
     version: "2.1"
@@ -38,42 +43,31 @@ compose_containers:
         ports:
           - 8044:80
         restart: unless-stopped
-  ### MKDOCS
-  mkdocs:
-    version: "3.3"
-    services:
-      mkdocs:
-        container_name: mkdocs
-        ports:
-          - 8000:8000
-        volumes:
-          - .:/docs
-        image: squidfunk/mkdocs-material
-        restart: unless-stopped
-  ### UPTIME KUMA
-  uptime_kuma:
-    version: "3.3"
-    services:
-      uptime-kuma:
-        image: louislam/uptime-kuma:1
-        container_name: uptime-kuma
-        volumes:
-          - ./data:/app/data
-        ports:
-          - 3001:3001
-        restart: unless-stopped
+
+compose_envs:
+  proxy:
+    CLOUDFLARED_TOKEN: "{{ vault.cloudflared_token }}"
 
 ### CADDY
-caddy_config_dir: "{{ docker_dir }}/caddy"
-# TODO: add config to
-caddy_custom_config: ""
+caddy_config_dir: "{{ docker_dir }}/proxy"
+# TODO: add config to redirect missing subdomains
+caddy_custom_config: |
+  (tls) {
+    tls {
+      dns cloudflare {{ vault.dns_cloudflare_api_key }}
+    }
+  }
 caddy_rp_hosts:
+  # this is needed for caddy to grab the cert for the domain
+  - subdomain: bnuuy.net
+    extra: respond "jijiji"
   - subdomain: ntfy.bnuuy.net
     host: proxy
     port: 8044
-  - subdomain: uptime.bnuuy.net
-    host: proxy
-    port: 3001
   - subdomain: hci.bnuuy.net
-    host: blokk
+    host: kite
     port: 8020
+  # fallback for bnuuy -> bnn
+  # see https://caddyserver.com/docs/caddyfile/patterns#redirect-www-subdomain
+  - subdomain: "*.bnuuy.net"
+    extra: redir https://{labels.2}.bnn.net{uri}

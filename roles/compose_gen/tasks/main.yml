@@ -6,7 +6,6 @@
     owner: "{{ docker_user }}"
     group: "{{ docker_group }}"
   loop: "{{ compose_containers | dict2items }}"
-  when: compose_containers is defined
   loop_control:
     label: "{{ item.key }}"
 
@@ -18,6 +17,13 @@
     owner: "{{ docker_user }}"
     group: "{{ docker_group }}"
   loop: "{{ compose_containers | dict2items }}"
-  when: compose_containers is defined
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Create or Modify .env File
+  template:
+    src: ../templates/.env.j2
+    dest: "{{ docker_dir }}/{{ item.key }}/.env"
+  loop: "{{ compose_envs | dict2items }}"
   loop_control:
     label: "{{ item.key }}"

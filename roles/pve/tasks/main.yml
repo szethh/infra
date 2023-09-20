@@ -1,6 +1,7 @@
 ---
 - name: Set up disks/mounts
   include_tasks: disks.yml
+  when: disks == true
 
 - name: Set up containers
   include_tasks: infrastructure.yml

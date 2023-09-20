@@ -4,12 +4,18 @@
         output file /data/log/access.log
     }
 
+  debug
+
   local_certs
 }
 
 {% for entry in caddy_rp_hosts %}
 {{ entry.subdomain }} {
-  reverse_proxy {{ entry.proto | default('http') }}://{{ entry.host }}:{{ entry.port }} {{ entry.extra | default('') }}
+  {% if entry.extra is defined %}
+  {{ entry.extra }}
+  {% else %}
+  reverse_proxy {{ entry.proto | default('http') }}://{{ entry.host }}:{{ entry.port }}{{ entry.path | default('') }}
+  {% endif %}
 }
 
 {% if custom_config is defined %}
