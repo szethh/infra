@@ -38,18 +38,18 @@
 #     - role: crab
 #     - role: compose_gen
 
-# - name: set up backup
-#   hosts: all
-#   become: true
-#   vars_files:
-#     - "vars/vault.yml"
-#   roles:
-#     - role: grog.package
-#       package_list:
-#         - name: borgbackup
-#         - name: borgmatic
-#     - role: backup/borgbase
-#     - role: backup/borg
-#       borg_encryption_passphrase: "{{ vault.borg_passphrase }}"
-#       borg_backup_dirs:
-#         - "/home/{{ vault.user }}"
+- name: set up backup
+  hosts: all
+  become: true
+  vars_files:
+    - "vars/vault.yml"
+  roles:
+    - role: grog.package
+      package_list:
+        - name: borgbackup
+        - name: borgmatic
+    - role: backup/borgbase
+    - role: backup/borg
+      borg_encryption_passphrase: "{{ vault.borg_passphrase }}"
+      borg_backup_dirs:
+        - "/home/{{ vault.user }}"
