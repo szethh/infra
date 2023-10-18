@@ -67,6 +67,9 @@ caddy_rp_hosts:
   - subdomain: hci.bnuuy.net
     host: kite
     port: 8020
+  - subdomain: house.bnuuy.net
+    host: proxy
+    port: 8080
   # fallback for bnuuy -> bnn
   # see https://caddyserver.com/docs/caddyfile/patterns#redirect-www-subdomain
   - subdomain: "*.bnuuy.net"

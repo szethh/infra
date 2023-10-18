@@ -179,6 +179,54 @@ compose_containers:
           - "TZ=Europe/Amsterdam"
           - "SAMBA_LOG_LEVEL=0"
         restart: unless-stopped
+  ### TimeMachine
+  timemachine:
+    version: "3.7"
+    services:
+      timemachine:
+        network_mode: "host"
+        environment:
+          - ADVERTISED_HOSTNAME=TM
+          - CUSTOM_SMB_CONF=false
+          - CUSTOM_USER=false
+          - DEBUG_LEVEL=1
+          - EXTERNAL_CONF=
+          - HIDE_SHARES=no
+          - MIMIC_MODEL=TimeCapsule8,119
+          - TM_USERNAME=timemachine
+          - TM_GROUPNAME=timemachine
+          - TM_UID=1000
+          - TM_GID=1000
+          - PASSWORD=timemachine
+          - SET_PERMISSIONS=false
+          - SHARE_NAME=TimeMachine
+          - SMB_INHERIT_PERMISSIONS=no
+          - SMB_NFS_ACES=no
+          - SMB_METADATA=stream
+          - SMB_PORT=445
+          - SMB_VFS_OBJECTS=acl_xattr fruit streams_xattr
+          - VOLUME_SIZE_LIMIT=0
+          - WORKGROUP=WORKGROUP
+        restart: unless-stopped
+        ports:
+          - "137:137/udp"
+          - "138:138/udp"
+          - "139:139"
+        volumes:
+          - /mnt/storage/timemachine:/opt/timemachine
+          - timemachine-var-lib-samba:/var/lib/samba
+          - timemachine-var-cache-samba:/var/cache/samba
+          - timemachine-run-samba:/run/samba
+        ulimits:
+          nofile:
+            soft: 65536
+            hard: 65536
+        container_name: timemachine
+        image: mbentley/timemachine:smb
+    volumes:
+      timemachine-var-lib-samba:
+      timemachine-var-cache-samba:
+      timemachine-run-samba:
 
 ### PIHOLE
 # network_cidr: 192.42.0.0/20
