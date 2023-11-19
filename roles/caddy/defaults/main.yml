@@ -1,3 +1,4 @@
 caddy_config_dir:
 caddy_rp_hosts:
 caddy_custom_config:
+caddy_global_options: ""

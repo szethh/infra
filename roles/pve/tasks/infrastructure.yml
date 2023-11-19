@@ -39,3 +39,45 @@
       - keyctl={{ item.keyctl | default('0') }}
       # - mount={{ item.fsmount }}
   loop: "{{ lxc_main | default([]) }}"
+# automating home assistant in a declarative way is not very straightforward... used this tut https://www.youtube.com/watch?v=1Un4zJJWUTE
+# - name: Create VMs
+#   community.general.proxmox_kvm:
+#     node: pve
+#     net:
+#       net0: "virtio,bridge=vmbr0"
+#     virtio:
+#       virtio0: "tank-store:64,format=qcow2"
+#     vcpus: "{{ item.vcpus }}"
+#     vmid: "{{ item.vmid }}"
+#     # boot disk
+#     efidisk0:
+#       storage: tank-store
+#       format: raw
+#       efitype: 4m
+#       pre_enrolled_keys: false
+#     # hostname: "{{ item.name }}"
+#     agent: enabled=1
+#     bios: "{{ item.bios | default('seabios') }}"
+#     onboot: "{{ item.onboot | default('true') }}"
+#     state: present
+#     storage: speed
+#     machine: "{{ item.machine }}"
+#     disk: "{{ item.disk }}"
+#     cpus: "1"
+#     cores: "{{ item.cores }}"
+#     memory: "{{ item.memory }}"
+#     # swap: "{{ item.swap | default('512') }}"
+#     api_user: root@pam
+#     api_host: localhost
+#     api_password: "{{ vault.proxmox.pass }}"
+#     sshkeys: "{{ vault.pubkey }}"
+#     cipassword: "{{ vault.proxmox.pass }}"
+#     ostype: "{{ item.ostype }}"
+#     ostemplate: "{{ item.template | default('tank-store:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst') }}"
+#     # mounts: "{'mp0':'/mnt/storage,mp=/mnt/storage,backup=0'}"
+#     mounts: "{{ (item.mounts | default({})) | to_nice_json }}"
+#     features:
+#       - nesting={{ item.nesting | default('1') }}
+#       - keyctl={{ item.keyctl | default('0') }}
+#       # - mount={{ item.fsmount }}
+#   loop: "{{ pve_vms | default([]) }}"

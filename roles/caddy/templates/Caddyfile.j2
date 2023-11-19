@@ -6,7 +6,11 @@
 
   debug
 
-  local_certs
+  # local_certs
+
+  acme_dns cloudflare {{ vault.dns_cloudflare_api_key }}
+
+  {{ caddy_global_options }}
 }
 
 {% for entry in caddy_rp_hosts %}

@@ -113,7 +113,7 @@ server {
       add_header Cache-Control "no-cache, no-store, must-revalidate";
       # redirect (NOT PROXY PASS)
       # to let the client resolve the domain
-      return 301 http://$subdomain.bnn.net$request_uri;
+      return 301 http://$subdomain.int.bnuuy.net$request_uri;
     }
 
     # fallback to 404 page

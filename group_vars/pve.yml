@@ -56,15 +56,20 @@ lxc_main:
     memory: 4096
     nesting: 1
 
-  # - name: hass
-  #   vmid: 202
-  #   unprivileged: true
-  #   gw: 192.168.50.1
-  #   ip: 192.168.50.88
-  #   disk: "speed:64"
-  #   cores: 1
-  #   memory: 2048
-  #   nesting: 1
+# pve_vms:
+#   - name: hass
+#     vmid: 202
+#     gw: 192.168.50.1
+#     ip: 192.168.50.88
+#     disk: "tank:64"
+#     ostemplate: "tank-store:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst"
+#     cores: 4
+#     vcpus: 2
+#     machine: q35
+#     bios: ovmf
+#     ostype: other
+#     memory: 2048
+#     nesting: 1
 
 # lxc_mounts:
 # - name: jelly
@@ -118,7 +123,8 @@ compose_containers:
     version: "3.9"
     services:
       caddy:
-        image: caddy:latest
+        # image: caddy:latest
+        build: .
         container_name: caddy
         user: 1000:1000
         restart: unless-stopped
@@ -235,27 +241,27 @@ pihole_config_dir: "{{ docker_dir }}/pihole/etc-pihole"
 dnsmasq_config_dir: "{{ docker_dir }}/pihole/etc-dnsmasq.d"
 running_as_container: true
 dns_overrides:
-  - { ip: 100.78.187.125, custom_dns: "bnn.net" }
+  - { ip: 100.78.187.125, custom_dns: "int.bnuuy.net" }
 
 ### CADDY
 caddy_config_dir: "{{ docker_dir }}/caddy"
 caddy_rp_hosts:
-  - subdomain: spoti.bnn.net
+  - subdomain: spoti.int.bnuuy.net
     host: kite
     port: 8338
-  - subdomain: yt.bnn.net
+  - subdomain: yt.int.bnuuy.net
     host: kite
     port: 8003
-  - subdomain: sabnzbd.bnn.net
+  - subdomain: sabnzbd.int.bnuuy.net
     host: kite
     port: 6755
-  - subdomain: bookdl.bnn.net
+  - subdomain: bookdl.int.bnuuy.net
     host: kite
     port: 8033
-  - subdomain: pic.bnn.net
+  - subdomain: pic.int.bnuuy.net
     host: kite
     port: 2283
-  - subdomain: proxmox.bnn.net
+  - subdomain: proxmox.int.bnuuy.net
     host: pve
     port: 8006
     proto: https
@@ -265,73 +271,73 @@ caddy_rp_hosts:
           tls_insecure_skip_verify
         }
       }
-  - subdomain: paper.bnn.net
+  - subdomain: paper.int.bnuuy.net
     host: proxy
     port: 8008
-  - subdomain: change.bnn.net
+  - subdomain: change.int.bnuuy.net
     host: kite
     port: 5003
-  - subdomain: pdf.bnn.net
+  - subdomain: pdf.int.bnuuy.net
     host: kite
     port: 8800
-  - subdomain: bazarr.bnn.net
+  - subdomain: bazarr.int.bnuuy.net
     host: kite
     port: 6767
-  - subdomain: prowlarr.bnn.net
+  - subdomain: prowlarr.int.bnuuy.net
     host: kite
     port: 9696
-  - subdomain: radarr.bnn.net
+  - subdomain: radarr.int.bnuuy.net
     host: kite
     port: 7878
-  - subdomain: dsm.bnn.net
+  - subdomain: dsm.int.bnuuy.net
     host: oreonas
     port: 5001
-  - subdomain: shiori.bnn.net
+  - subdomain: shiori.int.bnuuy.net
     host: kite
     port: 8070
-  - subdomain: sonarrtv.bnn.net
+  - subdomain: sonarrtv.int.bnuuy.net
     host: kite
     port: 8988
-  - subdomain: readarr.bnn.net
+  - subdomain: readarr.int.bnuuy.net
     host: kite
     port: 8787
-  - subdomain: ntfy.bnn.net
+  - subdomain: ntfy.int.bnuuy.net
     host: proxy
     port: 8044
-  - subdomain: lidarr.bnn.net
+  - subdomain: lidarr.int.bnuuy.net
     host: kite
     port: 8686
-  - subdomain: calibre.bnn.net
+  - subdomain: calibre.int.bnuuy.net
     host: kite
     port: 8083
-  - subdomain: translate.bnn.net
+  - subdomain: translate.int.bnuuy.net
     host: kite
     port: 5050
-  - subdomain: home.bnn.net
+  - subdomain: home.int.bnuuy.net
     host: homeassistant
     port: 8123
-  - subdomain: hci.bnn.net
+  - subdomain: hci.int.bnuuy.net
     host: kite
     port: 8020
-  - subdomain: qbit.bnn.net
+  - subdomain: qbit.int.bnuuy.net
     host: kite
     port: 8090
-  - subdomain: jelly.bnn.net
+  - subdomain: jelly.int.bnuuy.net
     host: pve
     port: 8096
-  - subdomain: uptime.bnn.net
+  - subdomain: uptime.int.bnuuy.net
     host: kite
     port: 3001
-  - subdomain: sonarr.bnn.net
+  - subdomain: sonarr.int.bnuuy.net
     host: kite
     port: 8989
-  - subdomain: docs.bnn.net
+  - subdomain: docs.int.bnuuy.net
     host: kite
     port: 8000
-  - subdomain: plex.bnn.net
+  - subdomain: plex.int.bnuuy.net
     host: pve
     port: 32400
-  - subdomain: pihole.bnn.net
+  - subdomain: pihole.int.bnuuy.net
     host: pve
     port: 8020
     # path: /admin

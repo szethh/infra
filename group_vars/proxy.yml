@@ -70,7 +70,17 @@ caddy_rp_hosts:
   - subdomain: house.bnuuy.net
     host: proxy
     port: 8080
-  # fallback for bnuuy -> bnn
+  - subdomain: home.bnuuy.net
+    host: homeassistant
+    port: 8123
+  # fallback for *.bnuuy -> *.int.
   # see https://caddyserver.com/docs/caddyfile/patterns#redirect-www-subdomain
   - subdomain: "*.bnuuy.net"
-    extra: redir https://{labels.2}.bnn.net{uri}
+    extra: |
+      # Check if the subdomain doesn't match int.bnuuy.net
+      @notIntSubdomain {
+          not path_regexp ^/.*int\.bnuuy\.net/.*
+      }
+
+      # Redirect only if it's not int.*
+      redir @notIntSubdomain https://{labels.2}.int.{labels.1}.{labels.0}{uri}
