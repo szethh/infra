@@ -341,3 +341,6 @@ caddy_rp_hosts:
     host: pve
     port: 8020
     # path: /admin
+  - subdomain: ab.int.bnuuy.net
+    host: kite
+    port: 13378

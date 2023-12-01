@@ -74,3 +74,16 @@ compose_containers:
           - .:/docs
         image: squidfunk/mkdocs-material
         restart: unless-stopped
+  audiobookshelf:
+    version: "3.7"
+    services:
+      audiobookshelf:
+        image: ghcr.io/advplyr/audiobookshelf
+        ports:
+          - 13378:80
+        volumes:
+          - ./audiobooks:/audiobooks
+          - ./podcasts:/podcasts
+          - ./metadata:/metadata
+          - ./config:/config
+        restart: unless-stopped
