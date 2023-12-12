@@ -185,6 +185,20 @@ compose_containers:
           - "TZ=Europe/Amsterdam"
           - "SAMBA_LOG_LEVEL=0"
         restart: unless-stopped
+  jellyseerr:
+    version: "3"
+    services:
+      jellyseerr:
+        image: fallenbagel/jellyseerr:latest
+        container_name: jellyseerr
+        environment:
+          - LOG_LEVEL=debug
+          - TZ=Europe/Amsterdam
+        ports:
+          - 5055:5055
+        volumes:
+          - ./config:/app/config
+        restart: unless-stopped
   ### TimeMachine
   timemachine:
     version: "3.7"
@@ -322,9 +336,9 @@ caddy_rp_hosts:
   - subdomain: qbit.int.bnuuy.net
     host: kite
     port: 8090
-  - subdomain: jelly.int.bnuuy.net
-    host: pve
-    port: 8096
+  # - subdomain: jelly.int.bnuuy.net
+  #   host: pve
+  #   port: 8096
   - subdomain: uptime.int.bnuuy.net
     host: kite
     port: 3001
