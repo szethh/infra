@@ -358,3 +358,6 @@ caddy_rp_hosts:
   - subdomain: ab.int.bnuuy.net
     host: kite
     port: 13378
+  - subdomain: rss.int.bnuuy.net
+    host: kite
+    port: 8036

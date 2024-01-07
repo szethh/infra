@@ -87,3 +87,34 @@ compose_containers:
           - ./metadata:/metadata
           - ./config:/config
         restart: unless-stopped
+  freshrss:
+    version: "2.4"
+    services:
+      freshrss:
+        image: freshrss/freshrss:edge
+        container_name: freshrss
+        restart: unless-stopped
+        logging:
+          options:
+            max-size: 10m
+        volumes:
+          # Recommended volume for FreshRSS persistent data such as configuration and SQLite databases
+          - ./data:/var/www/FreshRSS/data
+          # Optional volume for storing third-party extensions
+          - ./extensions:/var/www/FreshRSS/extensions
+          # Optional file providing custom global settings (used before a FreshRSS install)
+          # - ./config.custom.php:/var/www/FreshRSS/data/config.custom.php
+          # Optional file providing custom user settings (used before a new user is created)
+          # - ./config-user.custom.php:/var/www/FreshRSS/data/config-user.custom.php
+        ports:
+          - "8036:80"
+        environment:
+          TZ: Europe/Amsterdam
+          CRON_MIN: "*/20"
+          FRESHRSS_ENV: development
+          FRESHRSS_USER: |-
+            --api_password ${ADMIN_API_PASSWORD}
+            --email ${ADMIN_EMAIL}
+            --language en
+            --password ${ADMIN_PASSWORD}
+            --user admin
