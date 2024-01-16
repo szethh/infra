@@ -305,7 +305,14 @@ caddy_rp_hosts:
     port: 7878
   - subdomain: dsm.int.bnuuy.net
     host: oreonas
+    proto: https
     port: 5001
+    extra: |
+      reverse_proxy https://oreonas:5001 {
+        transport http {
+          tls_insecure_skip_verify
+        }
+      }
   - subdomain: shiori.int.bnuuy.net
     host: kite
     port: 8070
