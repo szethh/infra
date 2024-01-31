@@ -118,3 +118,15 @@ compose_containers:
             --language en
             --password ${ADMIN_PASSWORD}
             --user admin
+  openbooks:
+    version: "3.3"
+    services:
+      openbooks:
+        ports:
+          - "8033:80"
+        volumes:
+          - "./books:/books"
+        restart: unless-stopped
+        container_name: openbooks
+        command: --name uwumiii --persist
+        image: evanbuss/openbooks:latest
