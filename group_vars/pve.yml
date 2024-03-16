@@ -247,6 +247,18 @@ compose_containers:
       timemachine-var-lib-samba:
       timemachine-var-cache-samba:
       timemachine-run-samba:
+  filebrowser:
+    services:
+      filebrowser:
+        container_name: filebrowser
+        volumes:
+          - /mnt/storage:/srv/storage
+          - ./database.db:/database.db
+          - ./filebrowser.json:/.filebrowser.json
+        user: 1000:1000
+        ports:
+          - 8560:80
+        image: filebrowser/filebrowser
 
 ### PIHOLE
 # network_cidr: 192.42.0.0/20
@@ -368,3 +380,6 @@ caddy_rp_hosts:
   - subdomain: rss.int.bnuuy.net
     host: kite
     port: 8036
+  - subdomain: file.int.bnuuy.net
+    host: pve
+    port: 8560
