@@ -206,3 +206,22 @@ compose_containers:
 
     volumes:
       model-cache:
+  # STIRLING PDF
+  stirling-pdf:
+    version: "3.3"
+    services:
+      stirling-pdf:
+        image: frooodle/s-pdf:latest
+        container_name: stirling-pdf
+        restart: unless-stopped
+        ports:
+          - "8800:8080"
+        volumes:
+          - ./training:/usr/share/tessdata #Required for extra OCR languages
+          - ./configs:/configs
+        #      - /location/of/customFiles:/customFiles/
+        #      - /location/of/logs:/logs/
+        environment:
+          - DOCKER_ENABLE_SECURITY=false
+          - INSTALL_BOOK_AND_ADVANCED_HTML_OPS=false
+          - LANGS=en_GB
