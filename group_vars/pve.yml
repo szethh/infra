@@ -267,6 +267,7 @@ pihole_config_dir: "{{ docker_dir }}/pihole/etc-pihole"
 dnsmasq_config_dir: "{{ docker_dir }}/pihole/etc-dnsmasq.d"
 running_as_container: true
 dns_overrides:
+  - { ip: 192.168.50.171, custom_dns: "int.bnuuy.net" }
   - { ip: 100.78.187.125, custom_dns: "int.bnuuy.net" }
 
 ### CADDY
