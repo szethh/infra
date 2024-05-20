@@ -74,12 +74,6 @@ caddy_rp_hosts:
   - subdomain: home.bnuuy.net
     host: homeassistant
     port: 8123
-  - subdomain: jelly.bnuuy.net
-    host: pve
-    port: 8096
-  - subdomain: request.bnuuy.net
-    host: pve
-    port: 5055
   # fallback for *.bnuuy -> *.int.
   # see https://caddyserver.com/docs/caddyfile/patterns#redirect-www-subdomain
   - subdomain: "*.bnuuy.net"

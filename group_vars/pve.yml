@@ -316,6 +316,12 @@ caddy_rp_hosts:
   - subdomain: radarr.int.bnuuy.net
     host: kite
     port: 7878
+  - subdomain: jelly.int.bnuuy.net
+    host: pve
+    port: 8096
+  - subdomain: request.int.bnuuy.net
+    host: pve
+    port: 5055
   - subdomain: dsm.int.bnuuy.net
     host: oreonas
     proto: https
