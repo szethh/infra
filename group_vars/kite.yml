@@ -232,3 +232,90 @@ compose_containers:
         ports:
           - 8044:80
         restart: unless-stopped
+  ### Paperless-ngx
+  paperless-ngx:
+    # docker-compose file for running paperless from the Docker Hub.
+    # This file contains everything paperless needs to run.
+    # Paperless supports amd64, arm and arm64 hardware.
+    #
+    # All compose files of paperless configure paperless in the following way:
+    #
+    # - Paperless is (re)started on system boot, if it was running before shutdown.
+    # - Docker volumes for storing data are managed by Docker.
+    # - Folders for importing and exporting files are created in the same directory
+    #   as this file and mounted to the correct folders inside the container.
+    # - Paperless listens on port 8000.
+    #
+    # In addition to that, this docker-compose file adds the following optional
+    # configurations:
+    #
+    # - Instead of SQLite (default), PostgreSQL is used as the database server.
+    #
+    # To install and update paperless with this file, do the following:
+    #
+    # - Copy this file as 'docker-compose.yml' and the files 'docker-compose.env'
+    #   and '.env' into a folder.
+    # - Run 'docker-compose pull'.
+    # - Run 'docker-compose run --rm webserver createsuperuser' to create a user.
+    # - Run 'docker-compose up -d'.
+    #
+    # For more extensive installation and update instructions, refer to the
+    # documentation.
+    services:
+      broker:
+        image: redis:6.0
+        container_name: paperless-ngx_redis
+        restart: unless-stopped
+        volumes:
+          - redisdata:/data
+
+      db:
+        image: postgres:13
+        container_name: paperless-ngx_postgres
+        restart: unless-stopped
+        volumes:
+          - ./postgres:/var/lib/postgresql/data
+        environment:
+          POSTGRES_DB: paperless
+          POSTGRES_USER: paperless
+          POSTGRES_PASSWORD: paperless
+
+      webserver:
+        image: ghcr.io/paperless-ngx/paperless-ngx:latest
+        container_name: paperless-ngx
+        restart: unless-stopped
+        depends_on:
+          - db
+          - broker
+        ports:
+          - 8008:8000
+        healthcheck:
+          test: ["CMD", "curl", "-f", "http://localhost:8000"]
+          interval: 30s
+          timeout: 10s
+          retries: 5
+        volumes:
+          - ./documents/data:/usr/src/paperless/data
+          - ./documents/media:/usr/src/paperless/media
+          - ./documents/export:/usr/src/paperless/export
+          - ./documents/consume:/usr/src/paperless/consume
+        env_file: .env
+        environment:
+          PAPERLESS_REDIS: redis://broker:6379
+          PAPERLESS_DBHOST: db
+
+    volumes:
+      redisdata:
+
+compose_envs:
+  paperless-ngx:
+    USERMAP_UID: "1000"
+    USERMAP_GID: "1000"
+    PAPERLESS_URL: "https://paper.int.{{ vault.base_url }}"
+    PAPERLESS_ALLOWED_HOSTS: "paper.int.{{ vault.base_url }},paper.{{ vault.base_url }}"
+    #PAPERLESS_CSRF_TRUSTED_ORIGINS=https://*.{{ vault.base_url }}
+    PAPERLESS_TIME_ZONE: Europe/Amsterdam
+    PAPERLESS_OCR_LANGUAGES: eng nld spa
+    PAPERLESS_OCR_LANGUAGE: eng+nld+spa
+    PAPERLESS_SECRET_KEY: "{{ vault.paperless_key }}"
+    PAPERLESS_FILENAME_FORMAT: "{title}"

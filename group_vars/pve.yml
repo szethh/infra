@@ -316,7 +316,7 @@ caddy_rp_hosts:
         }
       }
   - subdomain: paper.int.bnuuy.net
-    host: proxy
+    host: kite
     port: 8008
   - subdomain: change.int.bnuuy.net
     host: kite
