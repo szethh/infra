@@ -216,3 +216,19 @@ compose_containers:
           - DOCKER_ENABLE_SECURITY=false
           - INSTALL_BOOK_AND_ADVANCED_HTML_OPS=false
           - LANGS=en_GB
+  ### NTFY
+  ntfy:
+    services:
+      ntfy:
+        image: binwiederhier/ntfy
+        container_name: ntfy
+        command:
+          - serve
+        environment:
+          - TZ=Europe/Amsterdam
+        volumes:
+          - ./cache:/var/cache/ntfy
+          - ./data:/etc/ntfy
+        ports:
+          - 8044:80
+        restart: unless-stopped
