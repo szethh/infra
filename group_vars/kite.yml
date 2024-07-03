@@ -14,7 +14,6 @@ docker_dir: "/home/{{ vault.user }}/docker"
 compose_containers:
   ### HCI
   hci-website:
-    version: "3.3"
     services:
       bnuuy:
         container_name: bnuuy
@@ -26,7 +25,6 @@ compose_containers:
         restart: unless-stopped
   ### SHIORI
   shiori:
-    version: "3.3"
     services:
       shiori:
         image: radhifadlillah/shiori
@@ -38,7 +36,6 @@ compose_containers:
         restart: unless-stopped
   ### CHANGE DETECTION
   changedetection:
-    version: "3"
     services:
       changedetection:
         image: ghcr.io/dgtlmoon/changedetection.io
@@ -52,7 +49,6 @@ compose_containers:
         restart: unless-stopped
   ### UPTIME KUMA
   uptime_kuma:
-    version: "3.3"
     services:
       uptime-kuma:
         image: louislam/uptime-kuma:1
@@ -64,7 +60,6 @@ compose_containers:
         restart: unless-stopped
   ### MKDOCS
   mkdocs:
-    version: "3.3"
     services:
       mkdocs:
         container_name: mkdocs
@@ -75,7 +70,6 @@ compose_containers:
         image: squidfunk/mkdocs-material
         restart: unless-stopped
   audiobookshelf:
-    version: "3.7"
     services:
       audiobookshelf:
         container_name: audiobookshelf
@@ -88,7 +82,6 @@ compose_containers:
           - ./config:/config
         restart: unless-stopped
   freshrss:
-    version: "2.4"
     services:
       freshrss:
         image: freshrss/freshrss:edge
@@ -119,7 +112,6 @@ compose_containers:
             --password ${ADMIN_PASSWORD}
             --user admin
   openbooks:
-    version: "3.3"
     services:
       openbooks:
         ports:
@@ -208,7 +200,6 @@ compose_containers:
       model-cache:
   # STIRLING PDF
   stirling-pdf:
-    version: "3.3"
     services:
       stirling-pdf:
         image: frooodle/s-pdf:latest
