@@ -102,7 +102,6 @@ docker_dir: "/home/{{ vault.user }}/docker"
 compose_containers:
   ### PIHOLE
   pihole:
-    version: "3"
     services:
       pihole:
         container_name: pihole
@@ -120,7 +119,6 @@ compose_containers:
         restart: unless-stopped
   ### CADDY
   caddy:
-    version: "3.9"
     services:
       caddy:
         # image: caddy:latest
@@ -137,7 +135,6 @@ compose_containers:
           - ./data:/data
           - ./config:/config
   jellyfin:
-    version: "2.1"
     services:
       jellyfin:
         image: lscr.io/linuxserver/jellyfin:latest
@@ -155,7 +152,6 @@ compose_containers:
           - 8096:8096
         restart: unless-stopped
   plex:
-    version: "2.1"
     services:
       plex:
         image: ghcr.io/linuxserver/plex
@@ -172,7 +168,6 @@ compose_containers:
           - 32400:32400
         restart: unless-stopped
   samba-server:
-    version: "3.3"
     services:
       samba:
         image: crazymax/samba
@@ -186,7 +181,6 @@ compose_containers:
           - "SAMBA_LOG_LEVEL=0"
         restart: unless-stopped
   jellyseerr:
-    version: "3"
     services:
       jellyseerr:
         image: fallenbagel/jellyseerr:latest
@@ -201,7 +195,6 @@ compose_containers:
         restart: unless-stopped
   ### TimeMachine
   timemachine:
-    version: "3.7"
     services:
       timemachine:
         network_mode: "host"
@@ -383,7 +376,7 @@ caddy_rp_hosts:
   #   host: pve
   #   port: 8096
   - subdomain: uptime.int.bnuuy.net
-    host: kite
+    host: htz
     port: 3001
   - subdomain: sonarr.int.bnuuy.net
     host: kite
@@ -410,3 +403,6 @@ caddy_rp_hosts:
   - subdomain: sync-pve.int.bnuuy.net
     host: pve
     port: 8384
+  - subdomain: git.int.bnuuy.net
+    host: htz
+    port: 3005
