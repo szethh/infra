@@ -35,29 +35,29 @@ compose_containers:
           - "./config:/srv/shiori"
         restart: unless-stopped
   ### CHANGE DETECTION
-  changedetection:
-    services:
-      changedetection:
-        image: ghcr.io/dgtlmoon/changedetection.io
-        container_name: changedetection
-        environment:
-          - BASE_URL=https://change.bnuuy.net
-        volumes:
-          - ./data:/datastore
-        ports:
-          - 5003:5000
-        restart: unless-stopped
+  # changedetection:
+  #   services:
+  #     changedetection:
+  #       image: ghcr.io/dgtlmoon/changedetection.io
+  #       container_name: changedetection
+  #       environment:
+  #         - BASE_URL=https://change.bnuuy.net
+  #       volumes:
+  #         - ./data:/datastore
+  #       ports:
+  #         - 5003:5000
+  #       restart: unless-stopped
   ### UPTIME KUMA
-  uptime_kuma:
-    services:
-      uptime-kuma:
-        image: louislam/uptime-kuma:1
-        container_name: uptime-kuma
-        volumes:
-          - ./data:/app/data
-        ports:
-          - 3001:3001
-        restart: unless-stopped
+  # uptime_kuma:
+  #   services:
+  #     uptime-kuma:
+  #       image: louislam/uptime-kuma:1
+  #       container_name: uptime-kuma
+  #       volumes:
+  #         - ./data:/app/data
+  #       ports:
+  #         - 3001:3001
+  #       restart: unless-stopped
   ### MKDOCS
   mkdocs:
     services:

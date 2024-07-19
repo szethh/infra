@@ -315,8 +315,8 @@ caddy_rp_hosts:
     host: kite
     port: 5003
   - subdomain: pdf.int.bnuuy.net
-    host: kite
-    port: 8800
+    host: htz
+    port: 8080
   - subdomain: bazarr.int.bnuuy.net
     host: kite
     port: 6767
@@ -351,9 +351,9 @@ caddy_rp_hosts:
   - subdomain: readarr.int.bnuuy.net
     host: kite
     port: 8787
-  - subdomain: ntfy.int.bnuuy.net
-    host: proxy
-    port: 8044
+  # - subdomain: ntfy.int.bnuuy.net
+  #   host: proxy
+  #   port: 8044
   - subdomain: lidarr.int.bnuuy.net
     host: kite
     port: 8686
