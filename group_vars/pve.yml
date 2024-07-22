@@ -309,8 +309,8 @@ caddy_rp_hosts:
         }
       }
   - subdomain: paper.int.bnuuy.net
-    host: kite
-    port: 8008
+    host: nixvm
+    port: 28981
   - subdomain: change.int.bnuuy.net
     host: kite
     port: 5003
@@ -343,7 +343,7 @@ caddy_rp_hosts:
         }
       }
   - subdomain: shiori.int.bnuuy.net
-    host: kite
+    host: nixvm
     port: 8070
   - subdomain: sonarrtv.int.bnuuy.net
     host: kite
@@ -392,10 +392,10 @@ caddy_rp_hosts:
     port: 8020
     # path: /admin
   - subdomain: ab.int.bnuuy.net
-    host: kite
+    host: nixvm
     port: 13378
   - subdomain: rss.int.bnuuy.net
-    host: kite
+    host: htz
     port: 8036
   - subdomain: file.int.bnuuy.net
     host: pve
